@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach 4 Semanas</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+  :root{
+    --ink:#14110E;--paper:#F2EDE4;--card:#FBF8F2;--line:#DDD4C5;
+    --rust:#C24E1E;--rust-deep:#9E3D14;--olive:#5B6B3A;--olive-deep:#43512A;
+    --muted:#7A7164;--gold:#C99A2E;--shadow:0 1px 0 rgba(20,17,14,.04),0 6px 22px rgba(20,17,14,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;max-width:560px;margin:0 auto;padding:0 0 96px;overflow-x:hidden;}
+  h1,h2,h3,.cond{font-family:'Barlow Condensed',sans-serif;letter-spacing:.01em;}
+  header{background:var(--ink);color:var(--paper);padding:16px 20px 14px;position:relative;overflow:hidden;}
+  header::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:radial-gradient(circle,var(--rust) 0%,transparent 70%);opacity:.25;}
+  .brand{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .brand .mark{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--rust);}
+  .brand .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);}
+  h1{font-size:27px;font-weight:700;line-height:1.04;margin-top:6px;}
+  .sub{font-size:12.5px;color:#C9C0B2;margin-top:4px;}
+  .wkbar{display:flex;gap:5px;margin-top:13px;}
+  .wkseg{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.14);overflow:hidden;}
+  .wkseg .fill{height:100%;background:var(--rust);width:0;transition:width .4s;}
+  .wkseg.strong .fill{background:var(--gold);}
+  .wklbl{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#A89F90;text-transform:uppercase;letter-spacing:.05em;font-family:'Barlow Condensed';font-weight:600;}
+  .streak{display:flex;gap:7px;margin-top:13px;}
+  .stat{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;}
+  .stat .n{font-family:'Barlow Condensed';font-weight:700;font-size:21px;line-height:1;}
+  .stat .l{font-size:9.5px;color:#B7AE9F;text-transform:uppercase;letter-spacing:.07em;margin-top:3px;}
+  .coach{margin:14px 16px 0;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--olive);border-radius:13px;padding:13px 15px;box-shadow:var(--shadow);}
+  .coach.alert{border-left-color:var(--rust);}
+  .coach .who{font-family:'Barlow Condensed';font-weight:600;font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--olive-deep);display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+  .coach.alert .who{color:var(--rust-deep);}
+  .coach .who::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;}
+  .coach p{font-size:14px;}.coach p+p{margin-top:7px;}
+  .coach .em{color:var(--rust-deep);font-weight:600;}
+  section{margin:15px 16px 0;}
+  .eyebrow{font-family:'Barlow Condensed';font-weight:600;font-size:11.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;gap:9px;}
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;}
+  .card .top{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .card .top h2{font-size:20px;font-weight:700;}
+  .tag{font-family:'Barlow Condensed';font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:20px;background:var(--rust);color:#fff;white-space:nowrap;}
+  .tag.olive{background:var(--olive);}.tag.gold{background:var(--gold);color:var(--ink);}
+  .ex{padding:12px 15px;border-bottom:1px solid var(--line);}.ex:last-child{border-bottom:none;}
+  .ex .name{font-weight:600;font-size:14.5px;display:flex;justify-content:space-between;gap:8px;}
+  .ex .target{font-family:'Barlow Condensed';font-size:13.5px;color:var(--rust-deep);font-weight:600;white-space:nowrap;}
+  .ex .hint{font-size:12px;color:var(--muted);margin-top:3px;}
+  .ex .last{font-size:11.5px;color:var(--olive-deep);margin-top:5px;font-weight:500;}
+  .logrow{display:flex;gap:7px;margin-top:9px;}.logrow .fld{flex:1;}
+  .logrow label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px;font-weight:600;}
+  input,select{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px;font-family:'Barlow Condensed';font-size:17px;font-weight:600;text-align:center;color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--rust);}
+  select{font-family:'Inter';font-size:14px;font-weight:500;text-align:left;}
+  .q{font-size:13px;font-weight:600;margin-bottom:8px;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip{border:1.5px solid var(--line);background:#fff;border-radius:22px;padding:7px 12px;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .12s;color:var(--ink);}
+  .chip:active{transform:scale(.96);}
+  .chip.sel{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .note{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:'Inter';font-size:14px;resize:vertical;min-height:50px;background:#fff;color:var(--ink);text-align:left;}
+  .note:focus{outline:none;border-color:var(--rust);}
+  .btn{width:100%;border:none;border-radius:12px;padding:14px;font-family:'Barlow Condensed';font-weight:700;font-size:17px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:all .12s;}
+  .btn:active{transform:scale(.985);}
+  .btn-primary{background:var(--rust);color:#fff;box-shadow:0 4px 14px rgba(194,78,30,.3);}
+  .btn-primary:disabled{background:var(--line);color:var(--muted);box-shadow:none;}
+  .btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink);}
+  .btn-row{display:flex;gap:8px;margin-top:12px;}.btn-row .btn{flex:1;}
+  .checks{display:flex;flex-direction:column;gap:0;}
+  .ckitem{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .ckitem:last-child{border-bottom:none;}
+  .ckbox{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .ckitem.done .ckbox{background:var(--olive);border-color:var(--olive);}
+  .ckbox svg{width:15px;height:15px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transition:opacity .15s;}
+  .ckitem.done .ckbox svg{opacity:1;}
+  .ckitem .lbl{font-size:14px;font-weight:500;}
+  .ckitem.done .lbl{color:var(--muted);text-decoration:line-through;}
+  .ckitem .ic{font-size:18px;width:24px;text-align:center;}
+  .mrow{display:flex;gap:8px;padding:12px 15px;border-bottom:1px solid var(--line);align-items:center;}
+  .mrow:last-child{border-bottom:none;}
+  .mrow .mlbl{flex:1;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;}
+  .mrow .mlbl .ic{font-size:17px;}
+  .mrow input,.mrow select{max-width:120px;}
+  .chartwrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 13px 9px;box-shadow:var(--shadow);margin-bottom:13px;}
+  .chartwrap h3{font-size:15.5px;font-weight:600;}
+  .chartwrap .cap{font-size:11.5px;color:var(--muted);margin:1px 0 10px;}
+  svg.chart{width:100%;height:auto;display:block;}
+  .legend{display:flex;gap:13px;flex-wrap:wrap;margin-top:8px;}
+  .legend span{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+  .legend i{width:11px;height:3px;border-radius:2px;}
+  .hrow{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:var(--card);border:1px solid var(--line);border-radius:11px;margin-bottom:7px;}
+  .hrow .hd{font-family:'Barlow Condensed';font-weight:600;font-size:14.5px;}
+  .hrow .hs{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .badge{font-size:10.5px;padding:3px 8px;border-radius:12px;font-weight:600;}
+  .badge.up{background:#E5EBD8;color:var(--olive-deep);}.badge.same{background:#EFE9DC;color:var(--muted);}.badge.tough{background:#F6E0D4;color:var(--rust-deep);}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:16px 10px;}
+  .ai{background:linear-gradient(150deg,#1b1813,#2a241c);color:var(--paper);border-radius:14px;padding:16px;box-shadow:var(--shadow);}
+  .ai h3{font-size:18px;color:#fff;margin-bottom:3px;}
+  .ai .cap{font-size:12px;color:#B7AE9F;margin-bottom:13px;}
+  .ai .out{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:14px;font-size:14px;line-height:1.6;white-space:pre-wrap;min-height:40px;}
+  .ai .out.empty2{color:#998f80;font-style:italic;}
+  .spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 4px 9px;z-index:20;}
+  nav button{flex:1;background:none;border:none;padding:6px 2px;cursor:pointer;color:var(--muted);font-family:'Barlow Condensed';font-weight:600;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:9px;transition:color .12s;}
+  nav button.active{color:var(--rust);}
+  nav button svg{width:20px;height:20px;}
+  .hidden{display:none;}
+  .toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:11px 19px;border-radius:24px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:30;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:90%;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .mini{font-size:10.5px;color:var(--muted);text-align:center;margin:16px 16px 0;line-height:1.5;}
+  .subtle{font-size:12px;color:var(--muted);margin-top:9px;text-align:center;}
+  .meal{padding:13px 15px;border-bottom:1px solid var(--line);}
+  .meal:last-child{border-bottom:none;}
+  .meal .mh{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+  .meal .mt{font-family:'Barlow Condensed';font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--rust-deep);}
+  .meal .micon{font-size:15px;}
+  .meal .mdish{font-size:14.5px;font-weight:600;line-height:1.35;}
+  .meal .mpro{display:inline-block;margin-top:6px;font-family:'Barlow Condensed';font-weight:600;font-size:12px;background:#E5EBD8;color:var(--olive-deep);padding:3px 9px;border-radius:20px;}
+  .meal .mtip{font-size:12px;color:var(--muted);margin-top:6px;}
+  .tmrw{padding:12px 15px;}
+  .tmrw .th{font-size:13px;font-weight:600;margin-bottom:7px;}
+  .tmrw .ti{font-size:13px;color:var(--ink);margin-top:4px;display:flex;gap:7px;}
+  .tmrw .ti .b{color:var(--rust);font-weight:700;}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="mark">Coach Integral</span><span class="dot"></span><span class="mark" id="phaseLbl" style="color:var(--gold);"></span></div>
+  <h1 id="hHello">—</h1>
+  <div class="sub" id="hDate"></div>
+  <div class="wkbar" id="wkbar"></div>
+  <div class="wklbl"><span id="wkText">Semana 1</span><span id="dayText">Día 1 de 28</span></div>
+  <div class="streak">
+    <div class="stat"><div class="n" id="sStreak">0</div><div class="l">Racha</div></div>
+    <div class="stat"><div class="n" id="sTrain">0</div><div class="l">Entrenos</div></div>
+    <div class="stat"><div class="n" id="sSmoke">—</div><div class="l">Tabaco hoy</div></div>
+    <div class="stat"><div class="n" id="sWeight">—</div><div class="l">Peso kg</div></div>
+  </div>
+</header>
+
+<div id="tabToday">
+  <div class="coach" id="coachBox"><div class="who">Coach</div><div id="coachMsg"></div></div>
+  <section>
+    <div class="eyebrow">Hábitos de hoy</div>
+    <div class="card"><div class="checks" id="habitList"></div></div>
+  </section>
+  <section>
+    <div class="eyebrow">Menú de hoy</div>
+    <div class="card" id="menuCard"></div>
+  </section>
+  <section>
+    <div class="eyebrow">Mañana toca preparar</div>
+    <div class="card" id="menuTomorrow" style="background:#F2F7FC;"></div>
+  </section>
+  <section>
+    <div class="eyebrow">Entreno de hoy</div>
+    <div class="card">
+      <div class="top"><h2 id="dayName">—</h2><span class="tag" id="dayTag">—</span></div>
+      <div id="exList"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="restBtn">Descanso</button>
+      <button class="btn btn-ghost" id="padelBtn">Pádel</button>
+    </div>
+  </section>
+  <section>
+    <div class="eyebrow">Datos del día (reloj)</div>
+    <div class="card">
+      <div class="mrow"><div class="mlbl"><span class="ic">⚖️</span>Peso (kg)</div><input type="number" inputmode="decimal" id="mWeight" placeholder="—"></div>
+      <div class="mrow"><div class="mlbl"><span class="ic">😴</span>Sueño (h)</div><input type="number" inputmode="decimal" id="mSleep" placeholder="—"></div>
+      <div class="mrow"><div class="mlbl"><span class="ic">👟</span>Pasos</div><input type="number" inputmode="numeric" id="mSteps" placeholder="—"></div>
+      <div class="mrow"><div class="mlbl"><span class="ic">🚬</span>Cigarros hoy</div><input type="number" inputmode="numeric" id="mSmoke" placeholder="—"></div>
+      <div class="mrow"><div class="mlbl"><span class="ic">⚡</span>Ánimo / energía</div>
+        <select id="mMood"><option value="">—</option><option value="alta">Alta</option><option value="normal">Normal</option><option value="baja">Baja</option></select></div>
+    </div>
+  </section>
+  <section>
+    <div class="eyebrow">¿Cómo ha ido la sesión?</div>
+    <div class="card" style="padding:14px 15px;">
+      <div class="q">Esfuerzo</div>
+      <div class="chips" id="chipsEffort">
+        <div class="chip" data-v="suave">Suave</div><div class="chip" data-v="justo">En punto</div>
+        <div class="chip" data-v="duro">Duro pero pude</div><div class="chip" data-v="muyduro">Al límite</div>
+      </div>
+      <textarea class="note" id="dayNote" placeholder="Nota para el coach: cómo te sientes, qué tal el día con tu madre, el press, lo que sea…" style="margin-top:12px;"></textarea>
+      <button class="btn btn-primary" id="saveBtn" style="margin-top:12px;">Cerrar el día</button>
+    </div>
+  </section>
+  <div class="mini">Datos guardados solo en este dispositivo. Para de inmediato ante mareo, dolor torácico o molestia articular y consulta a tu médico. Las alertas de tensión/apnea del reloj deben confirmarse con un profesional.</div>
+</div>
+
+<div id="tabProgress" class="hidden">
+  <section>
+    <div class="eyebrow">Lectura del coach</div>
+    <div class="coach alert" id="trendBox"><div class="who">Análisis</div><div id="trendMsg"></div></div>
+  </section>
+  <section>
+    <div class="chartwrap"><h3>Peso corporal</h3><div class="cap">Tu tendencia. Bajar medio kg/semana es el ritmo sano.</div><div id="chartWeight"></div></div>
+    <div class="chartwrap"><h3>Volumen de entreno</h3><div class="cap">Peso total movido por sesión. Si sube, ganas fuerza.</div>
+      <div id="chartVol"></div>
+      <div class="legend"><span><i style="background:var(--rust);"></i>Volumen</span><span><i style="background:var(--olive);"></i>Tendencia</span></div>
+    </div>
+    <div class="chartwrap"><h3>Tabaco</h3><div class="cap">Cigarros al día. El objetivo es la pendiente hacia abajo.</div><div id="chartSmoke"></div></div>
+    <div class="chartwrap"><h3>Sueño y pasos</h3><div class="cap">Media de los días registrados.</div><div id="chartHabits"></div></div>
+  </section>
+  <section><div class="eyebrow">Historial</div><div id="histList"></div></section>
+</div>
+
+<div id="tabAI" class="hidden">
+  <section>
+    <div class="eyebrow">Tu coach con IA</div>
+    <div class="ai">
+      <h3>Análisis de evolución</h3>
+      <div class="cap">Reúno todos tus datos (entreno, peso, tabaco, sueño, ánimo y la semana del programa) y te doy una lectura real de cómo vas.</div>
+      <button class="btn btn-primary" id="aiBtn">Analizar mi evolución</button>
+      <div class="out empty2" id="aiOut" style="margin-top:13px;">Pulsa el botón cuando tengas unos días registrados. Cuantos más datos, mejor te leo.</div>
+    </div>
+    <div class="subtle">El análisis usa los datos de esta app. No accede a tu Apple Watch directamente: los valores del reloj los registras tú en la pestaña Hoy.</div>
+  </section>
+  <section>
+    <div class="eyebrow">Resumen para compartir</div>
+    <div class="card" style="padding:14px 15px;">
+      <p style="font-size:13.5px;color:var(--muted);">Genera un resumen de texto de tu semana para pegármelo en el chat si quieres una segunda opinión más larga.</p>
+      <button class="btn btn-ghost" id="summaryBtn" style="margin-top:11px;">Generar resumen de texto</button>
+      <textarea class="note" id="summaryOut" style="margin-top:11px;min-height:90px;display:none;" readonly></textarea>
+    </div>
+  </section>
+</div>
+
+<div id="tabPlan" class="hidden">
+  <section>
+    <div class="eyebrow">Programa 4 semanas</div>
+    <div class="coach" style="border-left-color:var(--gold);"><div class="who" style="color:#8A6A14;">El mapa</div>
+      <p><span class="em">Semanas 1–2: fuerte.</span> Entreno 3 días, comida estricta sin pasar hambre, caminar 35–40 min, tabaco a la baja (3/4 y luego ½), fuerza con tu banco y mancuernas.</p>
+      <p><span class="em">Semanas 3–4: consolidar.</span> Mantienes lo ganado, caminar 20–25 min, sigues bajando tabaco hacia dejarlo, y afianzas hábitos para que duren.</p>
+    </div>
+  </section>
+  <section id="planList"></section>
+  <section>
+    <div class="eyebrow">Tus datos</div>
+    <div class="card" style="padding:14px 15px;">
+      <p style="font-size:13px;color:var(--muted);">Guarda una copia de seguridad o pásala a otro móvil. Importar reemplaza los datos actuales.</p>
+      <div class="btn-row"><button class="btn btn-ghost" id="exportBtn">Exportar copia</button><button class="btn btn-ghost" id="importBtn">Importar</button></div>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+      <button class="btn btn-ghost" id="resetBtn" style="margin-top:8px;color:var(--rust-deep);">Reiniciar todo</button>
+    </div>
+  </section>
+</div>
+
+<nav>
+  <button id="navToday" class="active" onclick="go('Today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v4M18 3v4M3 9h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"/></svg>Hoy</button>
+  <button id="navProgress" onclick="go('Progress')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>Progreso</button>
+  <button id="navAI" onclick="go('AI')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 00-7 7c0 2.4 1.2 4 2.5 5.3.8.8 1.5 1.7 1.5 2.7v1h6v-1c0-1 .7-1.9 1.5-2.7C17.8 13 19 11.4 19 9a7 7 0 00-7-7zM9 21h6"/></svg>Coach IA</button>
+  <button id="navPlan" onclick="go('Plan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12h6M9 16h6"/></svg>Plan</button>
+</nav>
+<div class="toast" id="toast"></div>
+<script>
+const KEY='coachIntegral_v1';
+const WORKOUTS=[
+  {id:0,name:'Día A · Empuje',focus:'Pecho, hombro, tríceps',
+   ex:[{k:'pressbanca',n:'Press banca con mancuernas',sets:3,rep:'8–12',hint:'En tu banco. Baja controlado, sube con fuerza.',w:true},
+       {k:'pressmili',n:'Press militar sentado',sets:3,rep:'8–12',hint:'Espalda apoyada, sin arquear lumbar.',w:true},
+       {k:'aperturas',n:'Aperturas en banco',sets:3,rep:'10–15',hint:'Brazos semiflexionados, nota el pecho.',w:true},
+       {k:'triceps',n:'Tríceps (goma o mancuerna)',sets:3,rep:'12–15',hint:'Extensión sobre cabeza o patada.',w:true}]},
+  {id:1,name:'Día B · Tracción y pierna',focus:'Espalda, bíceps, piernas',
+   ex:[{k:'remo',n:'Remo mancuerna a una mano',sets:3,rep:'8–12',hint:'Apoya rodilla y mano en banco. Codo atrás.',w:true},
+       {k:'goblet',n:'Sentadilla goblet',sets:3,rep:'10–15',hint:'Mancuerna al pecho, peso en talones.',w:true},
+       {k:'rumano',n:'Peso muerto rumano',sets:3,rep:'10–12',hint:'Baja por la cadera, nota el femoral.',w:true},
+       {k:'curl',n:'Curl de bíceps',sets:3,rep:'10–12',hint:'Codos pegados, sin balanceo.',w:true}]},
+  {id:2,name:'Día C · Full body + core',focus:'Todo el cuerpo, abdomen',
+   ex:[{k:'pressinc',n:'Press inclinado',sets:3,rep:'8–12',hint:'Inclina el banco si puedes.',w:true},
+       {k:'zancada',n:'Zancadas con mancuernas',sets:3,rep:'10/pierna',hint:'Paso al frente, baja recto.',w:true},
+       {k:'remogoma',n:'Remo con goma',sets:3,rep:'12–15',hint:'Escápulas atrás al tirar.',w:true},
+       {k:'plancha',n:'Plancha',sets:3,rep:'30–45 s',hint:'Cuerpo recto, abdomen firme.',w:false}]},
+];
+function habitsFor(week){
+  const strong=week<=2;
+  return [
+    {k:'walk',ic:'🚶',lbl:strong?'Caminar 35–40 min':'Caminar 20–25 min'},
+    {k:'plate',ic:'🍽️',lbl:'Regla del plato en comida y cena'},
+    {k:'nosugar',ic:'🥤',lbl:'Sin bebida azucarada'},
+    {k:'protein',ic:'🍗',lbl:'Proteína en cada comida'},
+    {k:'smoke',ic:'🚬',lbl:strong?(week===1?'Tabaco: máx 3/4 de lo habitual':'Tabaco: máx la mitad'):'Tabaco: a la baja hacia dejarlo'},
+    {k:'move',ic:'⏱️',lbl:'Levantarme cada hora en el trabajo'},
+  ];
+}
+const MENUS=[
+  {comida:{dish:'Pollo al horno + verdura asada + arroz integral',pro:'Pollo 170 g en crudo (~45 g proteína)',tip:'Mitad del plato verdura. Arroz: un puño cerrado, no más.'},
+   cena:{dish:'Revuelto de 3 huevos con espinacas + tomate',pro:'3 huevos (~19 g proteína)',tip:'Si te quedas con hambre, repite verdura, no pan.'}},
+  {comida:{dish:'Lentejas guisadas + ensalada verde grande',pro:'Lentejas 1 bote escurrido + 1 huevo duro (~25 g)',tip:'El huevo sube la proteína de la legumbre. Chorrito de AOVE.'},
+   cena:{dish:'Lomos de pescado al horno + verdura asada',pro:'Pescado 180 g en crudo (~36 g proteína)',tip:'Merluza o panga del congelador valen perfectamente.'}},
+  {comida:{dish:'Pollo + brócoli + patata cocida',pro:'Pollo 170 g (~45 g proteína)',tip:'Patata del tamaño de tu puño. Brócoli al gusto.'},
+   cena:{dish:'Ensalada de atún, huevo, tomate y maíz',pro:'2 latas de atún + 1 huevo (~38 g)',tip:'Atún al natural, no en aceite. Aliña con AOVE y vinagre.'}},
+  {comida:{dish:'Lentejas + puñado de arroz + verdura',pro:'Lentejas 1 bote + 1 huevo (~25 g)',tip:'Plato único completo. No necesitas más.'},
+   cena:{dish:'Crema de calabacín + tortilla francesa de 2 huevos',pro:'2 huevos (~13 g) — añade 50 g de jamón de pavo si quieres más',tip:'La crema llena sin calorías; la tortilla pone la proteína.'}},
+  {comida:{dish:'Pollo + verdura asada + hummus',pro:'Pollo 170 g (~45 g proteína)',tip:'2 cucharadas de hummus, no medio bote.'},
+   cena:{dish:'Salmón o caballa a la plancha + ensalada',pro:'Salmón 150 g (~31 g proteína)',tip:'Pescado azul: graso bueno. Una vez por semana va perfecto.'}},
+  {comida:{dish:'Libre con cabeza (aplica la regla del plato)',pro:'Proteína del tamaño de tu palma en cada plato',tip:'Es sábado: si comes fuera, elige proteína + verdura y modera el pan.'},
+   cena:{dish:'Cena social: disfruta, una copa máximo',pro:'Sin obsesión hoy',tip:'Un día flexible sostiene el plan. Vuelves mañana.'}},
+  {comida:{dish:'Garbanzos salteados con verduras y huevo',pro:'Garbanzos 1 bote + 2 huevos (~30 g)',tip:'Saltea con ajo y pimentón. Plato completo y barato.'},
+   cena:{dish:'Crema de verduras + pollo o pavo a la plancha',pro:'Pollo/pavo 150 g (~38 g proteína)',tip:'Prepara de paso la proteína de mañana mientras cocinas.'}},
+  // semana 2
+  {comida:{dish:'Pescado al horno + verdura asada + quinoa',pro:'Pescado 180 g (~36 g proteína)',tip:'Quinoa: 4 cucharadas cocida. Más proteína que el arroz.'},
+   cena:{dish:'Crema de calabacín + 2 huevos cocidos',pro:'2 huevos (~13 g)',tip:'Ligera y rápida para cuando llegas tarde.'}},
+  {comida:{dish:'Pollo + ensalada grande + un poco de patata',pro:'Pollo 170 g (~45 g proteína)',tip:'Ensalada abundante, patata pequeña.'},
+   cena:{dish:'Revuelto de huevo con champiñón y espinaca',pro:'3 huevos (~19 g)',tip:'4 minutos a la sartén. Sin excusas.'}},
+  {comida:{dish:'Lentejas + verdura salteada',pro:'Lentejas 1 bote + 1 huevo (~25 g)',tip:'Si entrenas hoy, añade un puño de arroz.'},
+   cena:{dish:'Ensalada de garbanzos, atún, tomate y pepino',pro:'Garbanzos ½ bote + 1 lata atún (~28 g)',tip:'Fría, se prepara en 5 min. Lleva tupper si hace falta.'}},
+  {comida:{dish:'Pollo + brócoli + arroz integral',pro:'Pollo 170 g (~45 g proteína)',tip:'El clásico que nunca falla. Arroz: un puño.'},
+   cena:{dish:'Sopa de verduras + pavo a la plancha',pro:'Pavo 150 g (~38 g proteína)',tip:'La sopa calienta y llena; el pavo pone la proteína.'}},
+  {comida:{dish:'Pescado + verdura asada + hummus',pro:'Pescado 180 g (~36 g proteína)',tip:'Repite la fórmula que ya dominas.'},
+   cena:{dish:'Tortilla de calabacín + ensalada',pro:'3 huevos (~19 g)',tip:'Tortilla jugosa con calabacín rallado.'}},
+  {comida:{dish:'Libre con cabeza (regla del plato)',pro:'Proteína del tamaño de tu palma',tip:'Sábado flexible otra vez. Disfrútalo sin culpa.'},
+   cena:{dish:'Cena social: disfruta, una copa máximo',pro:'Sin obsesión hoy',tip:'Te lo has ganado con la semana.'}},
+  {comida:{dish:'Garbanzos con verduras y huevo',pro:'Garbanzos 1 bote + 2 huevos (~30 g)',tip:'Cierra la semana con un plato completo.'},
+   cena:{dish:'Crema + salmón a la plancha',pro:'Salmón 150 g (~31 g proteína)',tip:'Aprovecha y deja preparada la base de la semana siguiente.'}},
+];
+function menuForDay(progDay){
+  // progDay 1..28 -> índice 0..13 (se repite el ciclo de 14 en semanas 3-4)
+  const idx=((Math.max(progDay,1)-1)%14);
+  return MENUS[idx];
+}
+function programInfo(){
+  const start=getStart();
+  const day=Math.floor((stripTime(new Date())-start)/86400000)+1;
+  if(day<1)return {day:0,week:1,phase:'fuerte',strong:true,overflow:false,notyet:true,startsIn:Math.abs(day)+1};
+  const d=Math.min(Math.max(day,1),28);
+  const week=Math.min(Math.ceil(d/7),4);
+  return {day:d,week,phase:week<=2?'fuerte':'consolidación',strong:week<=2,overflow:day>28};
+}
+const FIXED_START=1781906400000; // medianoche del sábado 20 jun 2026 (hora España)
+let state=load();
+function load(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}
+  return {start:FIXED_START,sessions:[],days:{},nextIdx:0,lastWeights:{}};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function getStart(){return state.start||stripTime(new Date());}
+function stripTime(d){const x=new Date(d);x.setHours(0,0,0,0);return x.getTime();}
+function isoDay(d){const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');}
+function todayKey(){return isoDay(new Date());}
+let sel={effort:null};
+function todayData(){const k=todayKey();if(!state.days[k])state.days[k]={habits:{}};return state.days[k];}
+
+function render(){
+  const pi=programInfo();
+  document.getElementById('hDate').textContent=(()=>{const s=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});return s.charAt(0).toUpperCase()+s.slice(1);})();
+  document.getElementById('phaseLbl').textContent='Fase '+pi.phase;
+  document.getElementById('wkText').textContent='Semana '+pi.week+(pi.strong?' · fuerte':' · consolidar');
+  document.getElementById('dayText').textContent=pi.notyet?'Empieza mañana':pi.overflow?'Programa completado 🎉':'Día '+pi.day+' de 28';
+  const wb=document.getElementById('wkbar');wb.innerHTML='';
+  for(let w=1;w<=4;w++){const seg=document.createElement('div');seg.className='wkseg'+(w<=2?' strong':'');
+    const fill=document.createElement('div');fill.className='fill';
+    fill.style.width=(w<pi.week?100:w===pi.week?(((pi.day-1)%7)+1)/7*100:0)+'%';
+    seg.appendChild(fill);wb.appendChild(seg);}
+  const h=new Date().getHours();
+  document.getElementById('hHello').textContent=h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches';
+  const w=WORKOUTS[state.nextIdx%3];
+  document.getElementById('dayName').textContent=w.name;
+  document.getElementById('dayTag').textContent=w.focus.split(',')[0];
+  const td=todayData();
+  const hl=document.getElementById('habitList');hl.innerHTML='';
+  habitsFor(pi.week).forEach(hb=>{const done=td.habits[hb.k];
+    const it=document.createElement('div');it.className='ckitem'+(done?' done':'');
+    it.innerHTML='<div class="ckbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div><span class="ic">'+hb.ic+'</span><span class="lbl">'+hb.lbl+'</span>';
+    it.onclick=()=>{td.habits[hb.k]=!td.habits[hb.k];save();render();};hl.appendChild(it);});
+  renderMenu(pi);
+  ['Weight','Sleep','Steps','Smoke'].forEach(f=>{const el=document.getElementById('m'+f);if(el&&td[f.toLowerCase()]!=null)el.value=td[f.toLowerCase()];});
+  if(td.mood)document.getElementById('mMood').value=td.mood;
+  const list=document.getElementById('exList');list.innerHTML='';
+  w.ex.forEach(ex=>{const last=state.lastWeights[ex.k];let advice='';
+    if(last){if(last.flag==='up')advice='<div class="last">▲ Bordaste la última — sube a '+suggest(last.w)+' kg si la técnica aguanta</div>';
+      else if(last.flag==='tough')advice='<div class="last">Mantén '+last.w+' kg y consolida</div>';
+      else advice='<div class="last">Última: '+last.w+' kg × '+last.r+'</div>';}
+    const div=document.createElement('div');div.className='ex';
+    div.innerHTML='<div class="name"><span>'+ex.n+'</span><span class="target">'+ex.sets+'×'+ex.rep+'</span></div><div class="hint">'+ex.hint+'</div>'+advice+
+      (ex.w?'<div class="logrow"><div class="fld"><label>Peso kg</label><input type="number" inputmode="decimal" id="w_'+ex.k+'" value="'+(last?last.w:'')+'" placeholder="0"></div><div class="fld"><label>Reps últ. serie</label><input type="number" inputmode="numeric" id="r_'+ex.k+'" placeholder="'+(ex.rep.split('–')[1]||ex.rep)+'"></div></div>'
+      :'<div class="logrow"><div class="fld"><label>Aguante seg</label><input type="number" inputmode="numeric" id="r_'+ex.k+'" placeholder="40"></div></div>');
+    list.appendChild(div);});
+  const st=computeStats();
+  document.getElementById('sStreak').textContent=st.streak;
+  document.getElementById('sTrain').textContent=st.train;
+  document.getElementById('sSmoke').textContent=td.smoke!=null?td.smoke:'—';
+  document.getElementById('sWeight').textContent=td.weight!=null?td.weight:'—';
+  document.getElementById('coachMsg').innerHTML=coachMessage(pi,st,w,td);
+  document.getElementById('coachBox').className='coach'+(coachAlert(pi,st,td)?' alert':'');
+  renderPlan(pi);renderProgress();
+}
+function suggest(w){const n=parseFloat(w);if(isNaN(n))return w;const inc=n<10?1:n<25?2:2.5;return +(n+inc).toFixed(1);}
+function coachAlert(pi,st,td){if(st.streak===0&&st.train>0)return true;if(td.sleep!=null&&td.sleep<6)return true;return false;}
+function coachMessage(pi,st,w,td){
+  let p=[];
+  if(pi.notyet){
+    p.push('<p>Arrancamos <span class="em">mañana sábado</span>. Hoy no hay nada que hacer aquí: descansa, deja la nevera lista con tu batch cooking y mentalízate.</p>');
+    p.push('<p>Mañana esto se enciende: hábitos, primer entreno (<span class="em">'+w.name+'</span>) y datos del reloj. Te espero a las 6:30 con tu batido. Vamos a por las 4 semanas.</p>');
+    return p.join('');
+  }
+  if(state.sessions.length===0&&Object.keys(state.days).length<=1&&!td.weight){
+    p.push('<p>Empezamos las 4 semanas. Estás en la <span class="em">fase fuerte</span>: aquí se aprieta. Hoy: marca tus hábitos, haz <span class="em">'+w.name+'</span> y mete los datos del reloj al final.</p>');
+    p.push('<p>Voy a ser directo contigo cuando te desvíes, porque me lo has pedido. Y a reconocerte el mérito cuando cumplas. Vamos.</p>');
+    return p.join('');}
+  const last=state.sessions[state.sessions.length-1];
+  const daysSince=last?Math.floor((Date.now()-new Date(last.date).getTime())/86400000):99;
+  if(pi.strong&&td.smoke!=null){const cap=pi.week===1?'3/4 de lo habitual':'la mitad';
+    if(td.smoke>12)p.push('<p><span class="em">'+td.smoke+' cigarros hoy.</span> Estás en semana de bajar a '+cap+'. Vas alto. Identifica cuál fumas por pura rutina y quítalo mañana. Sin excusas, dijiste que te apretara.</p>');}
+  if(td.sleep!=null&&td.sleep<6)p.push('<p>Dormiste <span class="em">'+td.sleep+' h</span>. Poco. Con la posible apnea esto pesa doble: rindes peor y comes peor. Hoy no busques récord; prioriza técnica y acuéstate antes.</p>');
+  if(daysSince>=4)p.push('<p>Han pasado <span class="em">'+daysSince+' días</span> sin entrenar. Lo dejamos correr una vez, no dos. Hoy bajas un punto el peso y vuelves. Punto.</p>');
+  else if(st.streak>=4)p.push('<p><span class="em">'+st.streak+' días de racha.</span> Así se construye. Esto ya no es intención, es hábito. Sigue.</p>');
+  else if(last&&last.effort==='suave')p.push('<p>La última se te quedó floja. Hoy en <span class="em">'+w.name+'</span> sube peso donde sobraron reps.</p>');
+  else if(last&&last.effort==='muyduro')p.push('<p>Vienes de una al límite. Hoy <span class="em">'+w.name+'</span>: si el cuerpo va cargado, mantén pesos. Apretar no es lesionarse.</p>');
+  else p.push('<p>Hoy toca <span class="em">'+w.name+'</span>. Semana '+pi.week+', '+(pi.strong?'a darlo todo':'a consolidar')+'. Marca hábitos y cierra el día con los datos.</p>');
+  if(td.weight==null)p.push('<p>No olvides pesarte y meter el dato. Sin números no te puedo decir si vamos bien.</p>');
+  return p.join('');
+}
+function computeStats(){
+  const train=state.sessions.filter(s=>s.type==='train').length;
+  const days=new Set(state.sessions.map(s=>isoDay(s.date)));
+  Object.keys(state.days).forEach(k=>{if(Object.values(state.days[k].habits||{}).some(Boolean)||state.days[k].weight!=null)days.add(k);});
+  let streak=0,d=new Date();
+  for(let i=0;i<90;i++){const key=isoDay(d);if(days.has(key)){streak++;d.setDate(d.getDate()-1);}else if(i===0){d.setDate(d.getDate()-1);}else break;}
+  return {train,streak};
+}
+document.querySelectorAll('#chipsEffort .chip').forEach(c=>{c.onclick=()=>{document.querySelectorAll('#chipsEffort .chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel.effort=c.dataset.v;};});
+function saveMetrics(){const td=todayData();const gv=(id)=>{const v=document.getElementById(id).value;return v===''?null:parseFloat(v);};
+  td.weight=gv('mWeight');td.sleep=gv('mSleep');td.steps=gv('mSteps');td.smoke=gv('mSmoke');td.mood=document.getElementById('mMood').value||null;}
+['mWeight','mSleep','mSteps','mSmoke','mMood'].forEach(id=>{document.getElementById(id).addEventListener('change',()=>{saveMetrics();save();render();});});
+document.getElementById('saveBtn').onclick=()=>{
+  const w=WORKOUTS[state.nextIdx%3];saveMetrics();let vol=0,logged=false;
+  w.ex.forEach(ex=>{const wi=document.getElementById('w_'+ex.k),ri=document.getElementById('r_'+ex.k);
+    const wv=wi?parseFloat(wi.value)||0:0,rv=ri?parseFloat(ri.value)||0:0;if(wv>0||rv>0)logged=true;if(ex.w)vol+=wv*rv*ex.sets;
+    if(ex.w&&wv>0){const top=parseInt((ex.rep.split('–')[1]||ex.rep))||12;let flag='same';
+      if(rv>=top&&sel.effort!=='muyduro')flag='up';else if(sel.effort==='muyduro')flag='tough';
+      state.lastWeights[ex.k]={w:wv,r:rv,flag};}});
+  if(logged){state.sessions.push({date:new Date().toISOString(),type:'train',workoutId:w.id,workoutName:w.name,effort:sel.effort||'justo',vol:Math.round(vol),note:document.getElementById('dayNote').value.trim()});
+    state.nextIdx=(state.nextIdx+1)%3;}
+  save();document.querySelectorAll('#chipsEffort .chip').forEach(c=>c.classList.remove('sel'));sel.effort=null;
+  document.getElementById('dayNote').value='';toast(logged?'Día cerrado. Buen trabajo.':'Datos guardados.');render();go('Progress');};
+document.getElementById('restBtn').onclick=()=>{state.sessions.push({date:new Date().toISOString(),type:'rest'});save();toast('Descanso registrado.');render();};
+document.getElementById('padelBtn').onclick=()=>{state.sessions.push({date:new Date().toISOString(),type:'padel'});save();toast('Pádel registrado. Cuenta.');render();};
+function dayMetricsSeries(field){return Object.keys(state.days).sort().map(k=>({d:k,v:state.days[k][field]})).filter(x=>x.v!=null);}
+function renderProgress(){
+  const trains=state.sessions.filter(s=>s.type==='train');
+  document.getElementById('trendMsg').innerHTML=trendText(trains);
+  lineChart('chartWeight',dayMetricsSeries('weight').map(x=>x.v),'#C24E1E',true);
+  volChart('chartVol',trains.map(s=>s.vol));
+  lineChart('chartSmoke',dayMetricsSeries('smoke').map(x=>x.v),'#7A7164',false);
+  habitsChart();
+  const hl=document.getElementById('histList');hl.innerHTML='';
+  const all=state.sessions.slice().reverse();
+  if(all.length===0){hl.innerHTML='<div class="empty">Sin sesiones aún.</div>';return;}
+  all.slice(0,16).forEach(s=>{const ds=new Date(s.date).toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+    const row=document.createElement('div');row.className='hrow';
+    if(s.type==='train'){const eff={suave:['same','Suave'],justo:['up','En punto'],duro:['up','Duro'],muyduro:['tough','Al límite']}[s.effort]||['same',''];
+      row.innerHTML='<div><div class="hd">'+s.workoutName+'</div><div class="hs">'+ds+(s.note?' · '+escapeHtml(s.note).slice(0,38):'')+'</div></div><div style="text-align:right;"><div class="hd" style="color:var(--olive-deep);">'+s.vol+'</div><span class="badge '+eff[0]+'">'+eff[1]+'</span></div>';}
+    else if(s.type==='padel')row.innerHTML='<div><div class="hd">Pádel</div><div class="hs">'+ds+'</div></div><span class="badge up">Cardio</span>';
+    else row.innerHTML='<div><div class="hd">Descanso</div><div class="hs">'+ds+'</div></div><span class="badge same">Recupera</span>';
+    hl.appendChild(row);});
+}
+function trendText(trains){
+  const wS=dayMetricsSeries('weight'),smS=dayMetricsSeries('smoke');let m=[];
+  if(trains.length<2&&wS.length<2)return '<p>Necesito unos días de datos para leerte bien. Registra peso, tabaco y algún entreno y aquí te suelto el análisis sin filtros.</p>';
+  if(trains.length>=3){const recent=trains.slice(-3).reduce((a,b)=>a+b.vol,0)/3;const old=trains.slice(0,-3);const oa=old.length?old.reduce((a,b)=>a+b.vol,0)/old.length:trains[0].vol;const pct=oa?Math.round((recent-oa)/oa*100):0;
+    if(pct>=5)m.push('<p><span class="em">Fuerza subiendo (+'+pct+'%).</span> Mueves más peso que al empezar. Esto es progreso de verdad.</p>');
+    else if(pct<=-8)m.push('<p>El volumen ha caído un '+Math.abs(pct)+'%. Si no es fatiga puntual, revisa sueño y descanso. La próxima lo recuperas.</p>');
+    else m.push('<p>Fuerza estable. Bien, pero no te acomodes: añade 1 rep o algo de peso donde te sobre.</p>');}
+  if(wS.length>=2){const diff=+(wS[wS.length-1].v-wS[0].v).toFixed(1);
+    if(diff<=-0.3)m.push('<p>Peso: <span class="em">'+diff+' kg</span> desde el inicio. Vas en la dirección correcta. Ritmo sano, no de hambre.</p>');
+    else if(diff>=0.5)m.push('<p>Peso: +'+diff+' kg. Puede ser músculo o líquidos, pero ojo a la comida del finde. Te lo digo claro.</p>');
+    else m.push('<p>Peso casi igual. En 4 semanas con esto basta; lo importante es que no suba y que la fuerza mejore.</p>');}
+  if(smS.length>=2){const d=smS[smS.length-1].v-smS[0].v;
+    if(d<0)m.push('<p><span class="em">Tabaco a la baja.</span> Esto es lo que más vale de todo el programa. Sigue bajando.</p>');
+    else if(d>0)m.push('<p>El tabaco ha subido. Aquí no transijo: es tu mayor palanca de salud. Recórtalo mañana.</p>');}
+  return m.join('')||'<p>Sigue registrando, que ya casi tengo lectura completa.</p>';
+}
+function lineChart(id,data,color,showLabels){
+  const el=document.getElementById(id);
+  if(data.length<2){el.innerHTML='<div class="empty">Necesito 2+ registros.</div>';return;}
+  const W=520,H=150,pad=30;const max=Math.max(...data),min=Math.min(...data);const rng=(max-min)||1;
+  const xs=(W-pad*2)/(data.length-1);const pts=data.map((v,i)=>[pad+i*xs,H-pad-(v-min)/rng*(H-pad*2)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  el.innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'"><path d="'+line+'" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'+pts.map((p,i)=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" fill="#fff" stroke="'+color+'" stroke-width="2"/>'+(showLabels&&(i===0||i===pts.length-1)?'<text x="'+p[0].toFixed(1)+'" y="'+(p[1]-9).toFixed(1)+'" font-size="12" fill="'+color+'" text-anchor="middle" font-family="Barlow Condensed" font-weight="700">'+data[i]+'</text>':'')).join('')+'</svg>';
+}
+function volChart(id,data){
+  const el=document.getElementById(id);
+  if(data.length<2){el.innerHTML='<div class="empty">Gráfico tras 2 entrenos.</div>';return;}
+  const d=data.slice(-12);const W=520,H=160,pad=26;const max=Math.max(...d)*1.1,min=Math.min(...d)*0.9,rng=(max-min)||1;
+  const xs=(W-pad*2)/(d.length-1);const pts=d.map((v,i)=>[pad+i*xs,H-pad-(v-min)/rng*(H-pad*2)]);
+  const n=d.length,xa=d.map((_,i)=>i),mx=xa.reduce((a,b)=>a+b,0)/n,my=d.reduce((a,b)=>a+b,0)/n;
+  let nu=0,de=0;xa.forEach((x,i)=>{nu+=(x-mx)*(d[i]-my);de+=(x-mx)*(x-mx);});const sl=de?nu/de:0,it=my-sl*mx;
+  const ty=i=>H-pad-((sl*i+it)-min)/rng*(H-pad*2);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const fill='M'+pts[0][0]+' '+(H-pad)+' '+pts.map(p=>'L'+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')+' L'+pts[pts.length-1][0]+' '+(H-pad)+' Z';
+  el.innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'"><defs><linearGradient id="gv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C24E1E" stop-opacity="0.2"/><stop offset="100%" stop-color="#C24E1E" stop-opacity="0"/></linearGradient></defs><path d="'+fill+'" fill="url(#gv)"/><line x1="'+pad+'" y1="'+ty(0).toFixed(1)+'" x2="'+(W-pad)+'" y2="'+ty(n-1).toFixed(1)+'" stroke="#5B6B3A" stroke-width="2" stroke-dasharray="5 4" opacity="0.7"/><path d="'+line+'" fill="none" stroke="#C24E1E" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'+pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" fill="#fff" stroke="#C24E1E" stroke-width="2"/>').join('')+'</svg>';
+}
+function habitsChart(){
+  const el=document.getElementById('chartHabits');
+  const sl=dayMetricsSeries('sleep'),stp=dayMetricsSeries('steps');
+  if(sl.length===0&&stp.length===0){el.innerHTML='<div class="empty">Registra sueño y pasos para ver la media.</div>';return;}
+  const avg=a=>a.length?(a.reduce((x,y)=>x+y.v,0)/a.length):0;
+  const slAvg=avg(sl).toFixed(1),stAvg=Math.round(avg(stp));
+  el.innerHTML='<div style="display:flex;gap:10px;"><div style="flex:1;text-align:center;padding:10px;background:#fff;border:1px solid var(--line);border-radius:10px;"><div style="font-family:\'Barlow Condensed\';font-weight:700;font-size:26px;color:var(--olive-deep);">'+slAvg+'</div><div style="font-size:11px;color:var(--muted);">h sueño / media</div></div><div style="flex:1;text-align:center;padding:10px;background:#fff;border:1px solid var(--line);border-radius:10px;"><div style="font-family:\'Barlow Condensed\';font-weight:700;font-size:26px;color:var(--rust-deep);">'+stAvg.toLocaleString('es-ES')+'</div><div style="font-size:11px;color:var(--muted);">pasos / media</div></div></div>';
+}
+function renderMenu(pi){
+  const mc=document.getElementById('menuCard');
+  const mt=document.getElementById('menuTomorrow');
+  if(pi.notyet){
+    mc.innerHTML='<div class="meal"><div class="mdish" style="color:var(--muted);font-weight:500;">El menú aparece mañana, con el día 1. Hoy aprovecha para dejar el batch cooking listo.</div></div>';
+    const m1=MENUS[0];
+    mt.innerHTML='<div class="tmrw"><div class="th">Mañana (Día 1) necesitarás:</div>'+
+      '<div class="ti"><span class="b">Comida ·</span><span>'+m1.comida.dish+'</span></div>'+
+      '<div class="ti"><span class="b">Cena ·</span><span>'+m1.cena.dish+'</span></div>'+
+      '<div class="mtip" style="margin-top:8px;">Deja hecho: pollo al horno, bandeja de verdura, lentejas y arroz/patata. Con eso tienes media semana.</div></div>';
+    return;
+  }
+  const todayMenu=menuForDay(pi.day);
+  mc.innerHTML=
+    '<div class="meal"><div class="mh"><span class="micon">🍽️</span><span class="mt">Comida</span></div>'+
+      '<div class="mdish">'+todayMenu.comida.dish+'</div>'+
+      '<span class="mpro">🍗 '+todayMenu.comida.pro+'</span>'+
+      '<div class="mtip">'+todayMenu.comida.tip+'</div></div>'+
+    '<div class="meal"><div class="mh"><span class="micon">🌙</span><span class="mt">Cena</span></div>'+
+      '<div class="mdish">'+todayMenu.cena.dish+'</div>'+
+      '<span class="mpro">🍗 '+todayMenu.cena.pro+'</span>'+
+      '<div class="mtip">'+todayMenu.cena.tip+'</div></div>';
+  // tomorrow
+  if(pi.day>=28){mt.innerHTML='<div class="tmrw"><div class="th">Programa completado 🎉 A mantener lo aprendido.</div></div>';return;}
+  const tm=menuForDay(pi.day+1);
+  mt.innerHTML='<div class="tmrw"><div class="th">Para mañana, ten a mano:</div>'+
+    '<div class="ti"><span class="b">Comida ·</span><span>'+tm.comida.dish+'</span></div>'+
+    '<div class="ti"><span class="b">Cena ·</span><span>'+tm.cena.dish+'</span></div>'+
+    '<div class="mtip" style="margin-top:8px;">Si algo lleva cocción (pollo, pescado, legumbre), déjalo listo esta noche o saca del congelador.</div></div>';
+}
+function renderPlan(pi){
+  const pl=document.getElementById('planList');let html='';
+  WORKOUTS.forEach((w,i)=>{const isNext=(state.nextIdx%3)===i;
+    html+='<div class="card" style="margin-bottom:13px;'+(isNext?'border-color:var(--rust);border-width:2px;':'')+'"><div class="top"><h2>'+w.name+'</h2><span class="tag'+(isNext?'':' olive')+'">'+(isNext?'Siguiente':w.focus.split(',')[0])+'</span></div>';
+    w.ex.forEach(ex=>{html+='<div class="ex"><div class="name"><span>'+ex.n+'</span><span class="target">'+ex.sets+'×'+ex.rep+'</span></div><div class="hint">'+ex.hint+'</div></div>';});
+    html+='</div>';});
+  pl.innerHTML=html;
+}
+function buildContext(){
+  const pi=programInfo();const trains=state.sessions.filter(s=>s.type==='train');
+  const wS=dayMetricsSeries('weight'),smS=dayMetricsSeries('smoke'),slS=dayMetricsSeries('sleep'),stS=dayMetricsSeries('steps');
+  const st=computeStats();
+  const recentNotes=trains.slice(-3).filter(s=>s.note).map(s=>s.note);
+  const moodDays=Object.keys(state.days).sort().slice(-5).map(k=>state.days[k].mood).filter(Boolean);
+  return {semana:pi.week,fase:pi.phase,dia_programa:pi.day,entrenos_totales:trains.length,racha:st.streak,
+    volumen_ultimos:trains.slice(-5).map(s=>s.vol),esfuerzo_reciente:trains.slice(-4).map(s=>s.effort),
+    peso:wS.map(x=>x.v),tabaco:smS.map(x=>x.v),sueno:slS.map(x=>x.v),pasos:stS.map(x=>x.v),
+    animo_reciente:moodDays,notas:recentNotes,
+    perfil:'Hombre 50 años, IMC inicial ~31, posible apnea e hipertensión sin confirmar, cuidador de madre con Alzheimer, trabajo sedentario, fumador reduciendo.'};
+}
+document.getElementById('aiBtn').onclick=async()=>{
+  const ctx=buildContext();
+  if(ctx.entrenos_totales===0&&ctx.peso.length===0){toast('Registra algún dato primero');return;}
+  const out=document.getElementById('aiOut');out.classList.remove('empty2');
+  out.innerHTML='<span class="spinner"></span> Analizando tu evolución…';
+  const sys='Eres el coach personal del usuario dentro de su app de salud. Tono EXIGENTE y DIRECTO pero con cabeza: el usuario te pidió expresamente que le aprietes cuando se desvíe y que le reconozcas el mérito cuando cumpla. Hablas en español de España, en segunda persona, cercano. Reglas: 1) Da una lectura honesta de su evolución usando SOLO los datos JSON que recibes. 2) Prioriza salud: el tabaco y el sueño/apnea son lo más importante; si el sueño es bajo o el tabaco no baja, díselo sin rodeos. 3) No prescribas dietas de hambre ni alta intensidad agresiva: con su posible apnea/hipertensión sin confirmar, recuérdale confirmarlo con su médico si procede. 4) Estructura breve: empieza con un veredicto de una frase, luego 2-3 puntos concretos de qué va bien y qué corregir, y cierra con la ÚNICA cosa en la que enfocarse mañana. 5) Máximo unas 160 palabras. No inventes datos que no estén. No uses markdown, solo texto plano con saltos de línea.';
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:sys,messages:[{role:"user",content:"Estos son mis datos de la app. Dame tu lectura de coach:\n"+JSON.stringify(ctx,null,1)}]})});
+    const data=await r.json();
+    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    out.textContent=txt||'No he podido generar el análisis. Inténtalo de nuevo en un momento.';
+  }catch(e){out.textContent='No he podido conectar para el análisis ahora mismo. Revisa la conexión e inténtalo otra vez. Mientras, en la pestaña Progreso tienes la lectura automática de tus datos.';}
+};
+document.getElementById('summaryBtn').onclick=()=>{
+  const ctx=buildContext();const ta=document.getElementById('summaryOut');ta.style.display='block';
+  const txt='RESUMEN COACH · Semana '+ctx.semana+' (fase '+ctx.fase+'), día '+ctx.dia_programa+'/28\n'+
+    'Entrenos: '+ctx.entrenos_totales+' · Racha: '+ctx.racha+' días\n'+
+    'Volumen últimas sesiones: '+(ctx.volumen_ultimos.join(', ')||'—')+'\n'+
+    'Esfuerzo reciente: '+(ctx.esfuerzo_reciente.join(', ')||'—')+'\n'+
+    'Peso (kg): '+(ctx.peso.join(', ')||'—')+'\n'+
+    'Tabaco/día: '+(ctx.tabaco.join(', ')||'—')+'\n'+
+    'Sueño (h): '+(ctx.sueno.join(', ')||'—')+'\n'+
+    'Pasos: '+(ctx.pasos.join(', ')||'—')+'\n'+
+    'Ánimo: '+(ctx.animo_reciente.join(', ')||'—')+'\n'+
+    'Notas: '+(ctx.notas.join(' | ')||'—');
+  ta.value=txt;ta.select();
+  try{navigator.clipboard.writeText(txt);toast('Resumen copiado al portapapeles');}catch(e){toast('Resumen generado');}
+};
+document.getElementById('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify(state)],{type:'application/json'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='coach-backup-'+todayKey()+'.json';a.click();URL.revokeObjectURL(url);toast('Copia descargada');};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=(e)=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const o=JSON.parse(rd.result);if(o&&o.sessions){state=o;save();toast('Datos importados');render();go('Today');}else toast('Archivo no válido');}catch(x){toast('No se pudo leer el archivo');}};rd.readAsText(f);};
+document.getElementById('resetBtn').onclick=()=>{if(confirm('¿Borrar todos tus datos y empezar de cero? Esto no se puede deshacer.')){localStorage.removeItem(KEY);state=load();state.start=stripTime(new Date());save();toast('Reiniciado');render();go('Today');}};
+function go(tab){['Today','Progress','AI','Plan'].forEach(t=>{document.getElementById('tab'+t).classList.toggle('hidden',t!==tab);document.getElementById('nav'+t).classList.toggle('active',t===tab);});window.scrollTo(0,0);}
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400);}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+render();
+</script>
+</body>
+</html>
